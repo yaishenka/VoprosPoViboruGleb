@@ -7,11 +7,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     _customPlot = ui->customPlot;
-    _binomDistr = std::make_shared<distribution::binominal::BinominalDistribution>();
+    _binomDistr = std::make_shared<distribution::BinominalDistribution>();
+    _poissonDistr = std::make_shared<distribution::PoissonDistribution>();
     ui->NValue->setReadOnly(true);
     ui->nValue->setReadOnly(true);
     ui->pValue->setReadOnly(true);
     connect (ui->binominalDistr, &QAbstractButton::pressed, this, &MainWindow::setBinominalDistribution);
+    connect(ui->poissonDistr, &QAbstractButton::pressed, this, &MainWindow::setPoissonDistribution);
 }
 
 MainWindow::~MainWindow() {
@@ -42,15 +44,40 @@ void MainWindow::setBinominalDistribution() {
         disconnect(_currentDistr.get(), nullptr,this, nullptr);
     }
     _currentDistr = _binomDistr;
+    ui->distrName->setText(_currentDistr->name());
     ui->NValue->setReadOnly(false);
     ui->nValue->setReadOnly(false);
     ui->pValue->setReadOnly(false);
-    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistributon::setN);
-    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistributon::setn);
-    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistributon::setp);
-    connect (_currentDistr.get(), &distribution::AbstractDistributon::dataReady, this, &MainWindow::updateCustomPlotData);
-    connect (_currentDistr.get(), &distribution::AbstractDistributon::minChanged, this, &MainWindow::resisePlot);
-    connect (_currentDistr.get(), &distribution::AbstractDistributon::maxChanged, this, &MainWindow::resisePlot);
+    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setN);
+    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setn);
+    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setp);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::dataReady, this, &MainWindow::updateCustomPlotData);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::minChanged, this, &MainWindow::resisePlot);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::maxChanged, this, &MainWindow::resisePlot);
+    _currentDistr->calculateData();
+}
+
+void MainWindow::setPoissonDistribution() {
+    if (_currentDistr == _poissonDistr) {
+        return;
+    }
+    if (_currentDistr) {
+        disconnect(ui->NValue, nullptr, _currentDistr.get(), nullptr);
+        disconnect(ui->nValue, nullptr, _currentDistr.get(), nullptr);
+        disconnect(ui->pValue, nullptr, _currentDistr.get(), nullptr);
+        disconnect(_currentDistr.get(), nullptr,this, nullptr);
+    }
+    _currentDistr = _poissonDistr;
+    ui->distrName->setText(_currentDistr->name());
+    ui->NValue->setReadOnly(false);
+    ui->nValue->setReadOnly(false);
+    ui->pValue->setReadOnly(false);
+    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setN);
+    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setn);
+    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setp);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::dataReady, this, &MainWindow::updateCustomPlotData);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::minChanged, this, &MainWindow::resisePlot);
+    connect (_currentDistr.get(), &distribution::AbstractDistribution::maxChanged, this, &MainWindow::resisePlot);
     _currentDistr->calculateData();
 }
 

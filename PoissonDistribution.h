@@ -8,14 +8,12 @@
 #include <QMetaMethod>
 #include "AbstractDistribution.h"
 
-
-
 namespace distribution {
-        class BinominalDistribution : public AbstractDistribution {
+        class PoissonDistribution : public AbstractDistribution {
             Q_OBJECT
             public:
                 void calculateData () override;
-                QString name () const override {return "BinominalDistribution"; }
+                QString name () const override {return "PoissonDistribution"; }
         };
 }
 

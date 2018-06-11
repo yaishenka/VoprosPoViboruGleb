@@ -27,14 +27,17 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     qcustomplot.cpp \
-    BinominalDistribution.cpp
+    BinominalDistribution.cpp \
+    AbstractDistribution.cpp \
+    PoissonDistribution.cpp
 
 
 HEADERS += \
         mainwindow.h \
     qcustomplot.h \
     BinominalDistribution.h \
-    AbstractDistribution.h
+    AbstractDistribution.h \
+    PoissonDistribution.h
 FORMS += \
         mainwindow.ui
 
