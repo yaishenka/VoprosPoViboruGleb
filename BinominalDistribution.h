@@ -1,33 +1,44 @@
+#pragma once
+
 #include <QVector>
 #include <QPair>
 #include <limits>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaMethod>
+#include "AbstractDistribution.h"
+
+
 namespace distribution {
     namespace binominal {
-        class BinominalDistribution : public QObject {
+        class BinominalDistribution : public distribution::AbstractDistributon {
             Q_OBJECT
-            Q_PROPERTY(double min READ min NOTIFY minChanged)
-            Q_PROPERTY(double max READ max NOTIFY minChanged)
             public:
-                QVector <QPair<int,double>> calculateData ();
+                void calculateData () override;
+                std::shared_ptr<QVector<QPair<int, double>>> data () const override {return _data; }
+
                 double factorial(int n);
                 double power (double base, int st);
 
-                double min () const {return _min; }
-                double max () const {return _max; }
+                void setN (int value) override;
+                void setn (double value) override;
+                void setp (double value) override;
+
+
+                double min () const override {return _min; }
+                double max () const override {return _max; }
+
+
 
             signals:
-                void minChanged (double min);
-                void maxChanged (double max);
-                void dataReady (QVector<QPair<int, double>> data);
+
             private:
                 double _min = std::numeric_limits<double>::max();
                 double _max = std::numeric_limits<double>::min();
                 double _p = 0.5;
                 int _N = 100;
                 int _n = 10;
+                std::shared_ptr<QVector<QPair<int, double>>> _data;
         };
     }
 }

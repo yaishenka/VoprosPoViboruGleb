@@ -33,6 +33,10 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     qcustomplot.h \
-    BinominalDistribution.h
+    BinominalDistribution.h \
+    AbstractDistribution.h
 FORMS += \
         mainwindow.ui
+
+DISTFILES += \
+    test.py

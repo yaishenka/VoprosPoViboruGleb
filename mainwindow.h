@@ -15,16 +15,20 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void initCustomPlot();
     ~MainWindow();
-    void on_pushButton_clicked();
-    void on_pushButton_pressed();
+    void updateCustomPlotData(std::shared_ptr<QVector<QPair<int, double>>> data);
+
+    void setBinominalDistribution();
+
+    void resisePlot(double value);
+
 
 private:
     Ui::MainWindow *ui;
     QCustomPlot* _customPlot;
     QPushButton *m_button;
-    std::shared_ptr<distribution::binominal::BinominalDistribution> _distr;
+    std::shared_ptr<distribution::binominal::BinominalDistribution> _binomDistr;
+    std::shared_ptr<distribution::AbstractDistributon> _currentDistr;
 
 };
 
