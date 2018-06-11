@@ -9,6 +9,7 @@
 #include "AbstractDistribution.h"
 
 
+
 namespace distribution {
     namespace binominal {
         class BinominalDistribution : public distribution::AbstractDistributon {

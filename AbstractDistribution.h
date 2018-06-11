@@ -6,6 +6,7 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QMetaMethod>
+#include <memory>
 
 namespace distribution {
     class AbstractDistributon: public QObject {

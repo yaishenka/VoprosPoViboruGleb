@@ -22,7 +22,6 @@ void MainWindow::updateCustomPlotData(std::shared_ptr<QVector<QPair<int, double>
     _customPlot->addGraph();
     _customPlot->graph(0)->setData(QVector<double>(), QVector<double>());
     for (auto p : *data.get()) {
-        qDebug() << p;
         _customPlot->graph(0)->addData(p.first, p.second);
     }
     _customPlot->xAxis->setRangeLower(_currentDistr->min());
