@@ -43,5 +43,4 @@ HEADERS += \
 FORMS += \
         mainwindow.ui
 
-DISTFILES += \
-    test.py
+DISTFILES +=
