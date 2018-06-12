@@ -6,88 +6,81 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    ui->NValue->setReadOnly(false);
+    ui->nValue->setReadOnly(false);
+    ui->pValue->setReadOnly(false);
     _customPlot = ui->customPlot;
-    _binomDistr = std::make_shared<distribution::BinominalDistribution>();
+
+    _binomDistr = std::make_shared<distribution::BinomialDistribution>();
     _poissonDistr = std::make_shared<distribution::PoissonDistribution>();
-    ui->NValue->setReadOnly(true);
-    ui->nValue->setReadOnly(true);
-    ui->pValue->setReadOnly(true);
-    connect (ui->binominalDistr, &QAbstractButton::pressed, this, &MainWindow::setBinominalDistribution);
-    connect(ui->poissonDistr, &QAbstractButton::pressed, this, &MainWindow::setPoissonDistribution);
+    _gaussDistr = std::make_shared<distribution::GaussDistribution>();
+
+    _customPlot->addGraph();
+    _customPlot->addGraph();
+    _customPlot->addGraph();
+
+    ui->binomialDistr->setAutoFillBackground(false);
+    QPalette p = ui->binomialDistr->palette();
+    p.setColor(QPalette::Button, _binomDistr->color());
+    ui->binomialDistr->setPalette(p);
+
+    ui->poissonDistr->setAutoFillBackground(false);
+    p = ui->poissonDistr->palette();
+    p.setColor(QPalette::Button, _poissonDistr->color());
+    ui->poissonDistr->setPalette(p);
+
+    ui->gaussDistr->setAutoFillBackground(false);
+    p = ui->gaussDistr->palette();
+    p.setColor(QPalette::Button, _gaussDistr->color());
+    ui->gaussDistr->setPalette(p);
+
+    _binomDistr->setGraph(_customPlot->graph(0));
+    _poissonDistr->setGraph(_customPlot->graph(1));
+    _gaussDistr->setGraph(_customPlot->graph(2));
+
+    connect (ui->binomialDistr, &QCheckBox::stateChanged, this, &MainWindow::setBinomialDistribution);
+    connect(ui->poissonDistr, &QCheckBox::stateChanged, this, &MainWindow::setPoissonDistribution);
+    connect(ui->gaussDistr, &QCheckBox::stateChanged, this, &MainWindow::setGaussDistribution);
+    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _binomDistr.get(), &distribution::AbstractDistribution::setN);
+
+    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _binomDistr.get(), &distribution::AbstractDistribution::setn);
+    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _binomDistr.get(), &distribution::AbstractDistribution::setp);
+    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _poissonDistr.get(), &distribution::AbstractDistribution::setN);
+    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _poissonDistr.get(), &distribution::AbstractDistribution::setn);
+    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _poissonDistr.get(), &distribution::AbstractDistribution::setp);
+    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _gaussDistr.get(), &distribution::AbstractDistribution::setN);
+    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _gaussDistr.get(), &distribution::AbstractDistribution::setn);
+    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _gaussDistr.get(), &distribution::AbstractDistribution::setp);
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::updateCustomPlotData(std::shared_ptr<QVector<QPair<int, double>>> data) {
-    _customPlot->addGraph();
-    _customPlot->graph(0)->setData(QVector<double>(), QVector<double>());
-    for (auto p : *data.get()) {
-        _customPlot->graph(0)->addData(p.first, p.second);
-    }
-    _customPlot->xAxis->setRangeLower(_currentDistr->min());
-    _customPlot->xAxis->setRangeUpper(_currentDistr->max());
+void MainWindow::reset() {
     _customPlot->yAxis->rescale(true);
     _customPlot->yAxis->scaleRange(1.2);
     _customPlot->replot(QCustomPlot::RefreshPriority::rpQueuedReplot);
 }
 
-void MainWindow::setBinominalDistribution() {
-    if (_currentDistr == _binomDistr) {
-        return;
-    }
-    if (_currentDistr) {
-        disconnect(ui->NValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(ui->nValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(ui->pValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(_currentDistr.get(), nullptr,this, nullptr);
-    }
-    _currentDistr = _binomDistr;
-    ui->distrName->setText(_currentDistr->name());
-    ui->NValue->setReadOnly(false);
-    ui->nValue->setReadOnly(false);
-    ui->pValue->setReadOnly(false);
-    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setN);
-    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setn);
-    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setp);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::dataReady, this, &MainWindow::updateCustomPlotData);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::minChanged, this, &MainWindow::resisePlot);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::maxChanged, this, &MainWindow::resisePlot);
-    _currentDistr->calculateData();
+void MainWindow::setBinomialDistribution(bool visible) {
+    ui->binomialDistr->setAutoFillBackground(visible);
+    _binomDistr->setGraphVisible(visible);
+    reset();
+
 }
 
-void MainWindow::setPoissonDistribution() {
-    if (_currentDistr == _poissonDistr) {
-        return;
-    }
-    if (_currentDistr) {
-        disconnect(ui->NValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(ui->nValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(ui->pValue, nullptr, _currentDistr.get(), nullptr);
-        disconnect(_currentDistr.get(), nullptr,this, nullptr);
-    }
-    _currentDistr = _poissonDistr;
-    ui->distrName->setText(_currentDistr->name());
-    ui->NValue->setReadOnly(false);
-    ui->nValue->setReadOnly(false);
-    ui->pValue->setReadOnly(false);
-    connect (ui->NValue, QOverload<int>::of(&QSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setN);
-    connect (ui->nValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setn);
-    connect (ui->pValue, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _currentDistr.get(), &distribution::AbstractDistribution::setp);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::dataReady, this, &MainWindow::updateCustomPlotData);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::minChanged, this, &MainWindow::resisePlot);
-    connect (_currentDistr.get(), &distribution::AbstractDistribution::maxChanged, this, &MainWindow::resisePlot);
-    _currentDistr->calculateData();
+void MainWindow::setPoissonDistribution(bool visible) {
+    ui->poissonDistr->setAutoFillBackground(visible);
+    _poissonDistr->setGraphVisible(visible);
+    reset();
 }
 
-void MainWindow::resisePlot(double value) {
-    if (_customPlot->graphCount()) {
-        _customPlot->xAxis->setRangeLower(_currentDistr->min());
-        _customPlot->xAxis->setRangeUpper(_currentDistr->max());
-        _customPlot->yAxis->rescale(true);
-        _customPlot->yAxis->scaleRange(1.2);
-        _customPlot->replot(QCustomPlot::RefreshPriority::rpQueuedReplot);
-    }
+void MainWindow::setGaussDistribution(bool visible) {
+    ui->gaussDistr->setAutoFillBackground(visible);
+    _gaussDistr->setGraphVisible(visible);
+    reset();
 }
+
 

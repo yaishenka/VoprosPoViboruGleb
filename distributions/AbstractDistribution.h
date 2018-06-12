@@ -9,6 +9,7 @@
 #include <memory>
 #include <cmath>
 #include <QString>
+#include "qcustomplot.h"
 
 namespace distribution {
     class AbstractDistribution: public QObject {
@@ -30,7 +31,15 @@ namespace distribution {
             double min () const {return _min; }
             double max () const {return _max; }
 
+            void setGraph(QCPGraph* graph);
+
+            void setGraphVisible(bool visible);
+            void deleteGraphData();
+            void resetGraphData();
+
             virtual QString name () const {return ""; }
+
+            virtual QColor color () const {return Qt::black; }
 
         signals:
             void minChanged (double min);
@@ -43,6 +52,6 @@ namespace distribution {
             int _N = 100;
             int _n = 10;
             std::shared_ptr<QVector<QPair<int, double>>> _data;
-
+            QCPGraph* _graph{nullptr};
     };
 }

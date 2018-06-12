@@ -24,20 +24,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    distributions/AbstractDistribution.cpp \
+    distributions/BinomialDistribution.cpp \
+    distributions/PoissonDistribution.cpp \
+    main.cpp \
+    mainwindow.cpp \
     qcustomplot.cpp \
-    BinominalDistribution.cpp \
-    AbstractDistribution.cpp \
-    PoissonDistribution.cpp
+    distributions/GaussDistribution.cpp
 
 
 HEADERS += \
-        mainwindow.h \
+    distributions/AbstractDistribution.h \
+    distributions/BinomialDistribution.h \
+    distributions/PoissonDistribution.h \
+    mainwindow.h \
     qcustomplot.h \
-    BinominalDistribution.h \
-    AbstractDistribution.h \
-    PoissonDistribution.h
+    distributions/GaussDistribution.h
 FORMS += \
         mainwindow.ui
 

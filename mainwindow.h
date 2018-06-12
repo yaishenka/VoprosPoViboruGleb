@@ -1,10 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#pragma once
+
 #include <QMainWindow>
 #include <qcustomplot.h>
-#include "BinominalDistribution.h"
-#include "PoissonDistribution.h"
+#include "distributions/BinomialDistribution.h"
+#include "distributions/PoissonDistribution.h"
+#include "distributions/GaussDistribution.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,22 +20,26 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void updateCustomPlotData(std::shared_ptr<QVector<QPair<int, double>>> data);
+//    void updateCustomPlotData(std::shared_ptr<QVector<QPair<int, double>>> data);
 
-    void setBinominalDistribution();
+    void setBinomialDistribution(bool visible);
 
-    void setPoissonDistribution();
+    void setPoissonDistribution(bool visible);
 
-    void resisePlot(double value);
+    void setGaussDistribution(bool visible);
+
+    void reset();
+
+//    void resisePlot(double value);
 
 
 private:
     Ui::MainWindow *ui;
     QCustomPlot* _customPlot;
-    QPushButton *m_button;
-    std::shared_ptr<distribution::BinominalDistribution> _binomDistr;
+    std::shared_ptr<distribution::BinomialDistribution> _binomDistr;
     std::shared_ptr<distribution::PoissonDistribution> _poissonDistr;
-    std::shared_ptr<distribution::AbstractDistribution> _currentDistr;
+    std::shared_ptr<distribution::GaussDistribution> _gaussDistr;
+//    std::shared_ptr<distribution::AbstractDistribution> _currentDistr;
 
 };
 
